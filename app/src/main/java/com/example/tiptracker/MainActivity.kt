@@ -6,10 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,20 +17,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,17 +37,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -79,17 +69,21 @@ class MainActivity : ComponentActivity() {
 fun TipTrackerLayout() {
     var billAmountInput by remember { mutableStateOf("") }
     var tipPercentInput by remember { mutableStateOf("") }
+    var personCountInput by remember { mutableStateOf("1") }
     var roundUpTip by remember { mutableStateOf(false) }
     var roundUpTotal by remember { mutableStateOf(false) }
 
     val billAmount = billAmountInput.toDoubleOrNull() ?: 0.0
     val tipPercent = tipPercentInput.toDoubleOrNull() ?: 0.0
+    val personCount = personCountInput.toIntOrNull() ?: 1
 
     val tipAmount = calculateTip(billAmount, tipPercent, roundUpTip, roundUpTotal)
     val totalAmount = calculateTotal(billAmount, tipAmount)
+    val totalPerPerson = calculateTotalPerPerson(totalAmount, personCount)
 
     val tipString = NumberFormat.getCurrencyInstance().format(tipAmount)
     val totalString = NumberFormat.getCurrencyInstance().format(totalAmount)
+    val totalPerPersonString = NumberFormat.getCurrencyInstance().format(totalPerPerson)
 
     Column(
         modifier = Modifier
@@ -109,7 +103,7 @@ fun TipTrackerLayout() {
         )
         EditNumberField(
             label = R.string.bill_amount,
-            leadingIcon = R.drawable.money,
+            leadingIcon = R.drawable.receipt_long,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
@@ -120,19 +114,35 @@ fun TipTrackerLayout() {
                 .padding(bottom = 20.dp)
                 .fillMaxWidth()
         )
-        EditNumberField(
-            label = R.string.tip_percentage,
-            leadingIcon = R.drawable.percent,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Done
-            ),
-            value = tipPercentInput,
-            onValueChange = { tipPercentInput = it },
+        Row(
             modifier = Modifier
                 .padding(bottom = 20.dp)
                 .fillMaxWidth()
-        )
+        ) {
+            EditNumberField(
+                label = R.string.tip_percentage,
+                leadingIcon = R.drawable.percent,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                value = tipPercentInput,
+                onValueChange = { tipPercentInput = it },
+                modifier = Modifier.weight(4f)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            EditNumberField(
+                label = R.string.people,
+                leadingIcon = R.drawable.person,
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                value = personCountInput,
+                onValueChange = { personCountInput = it },
+                modifier = Modifier.weight(3f)
+            )
+        }
         RoundUpRow(
             label = R.string.round_up_tip,
             roundUp = roundUpTip,
@@ -155,17 +165,25 @@ fun TipTrackerLayout() {
             modifier = Modifier.padding(bottom = 28.dp)
         )
         Text(
-            text = stringResource(id = R.string.tip_amount, tipString),
+            text = stringResource(R.string.tip_amount, tipString),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(bottom = 12.dp)
         )
         Text(
-            text = stringResource(id = R.string.total_amount, totalString),
+            text = stringResource(R.string.total_amount, totalString),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 12.dp)
         )
-        Spacer(modifier = Modifier.height(100.dp))
+        if(personCount > 1) {
+            Text(
+                text = stringResource(R.string.per_person_amount, totalPerPersonString),
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+//        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 
@@ -183,8 +201,21 @@ fun EditNumberField(
 
     TextField(
         value = value,
-        label = { Text(stringResource(label) )},
-        leadingIcon = { Icon(painter = painterResource(leadingIcon), null) },
+        label = {
+            Text(
+                stringResource(label),
+                fontSize = 14.sp
+            )
+        },
+        leadingIcon = {
+            Icon(
+                painter = painterResource(leadingIcon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(20.dp)
+                    .padding(0.dp)
+            )
+        },
         onValueChange = onValueChange,
         keyboardOptions = keyboardOptions,
         keyboardActions = KeyboardActions(
@@ -240,6 +271,10 @@ private fun calculateTip(
 
 private fun calculateTotal(bill: Double, tip: Double): Double {
     return bill + tip
+}
+
+private fun calculateTotalPerPerson(total: Double, personCount: Int): Double {
+    return total / personCount
 }
 
 @Preview(showBackground = true)
