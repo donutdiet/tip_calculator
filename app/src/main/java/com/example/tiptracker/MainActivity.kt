@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
 fun TipTrackerLayout() {
     var billAmountInput by remember { mutableStateOf("") }
     var tipPercentInput by remember { mutableStateOf("") }
-    var personCountInput by remember { mutableStateOf("1") }
+    var personCountInput by remember { mutableStateOf("") }
     var roundUpTip by remember { mutableStateOf(false) }
     var roundUpTotal by remember { mutableStateOf(false) }
 
