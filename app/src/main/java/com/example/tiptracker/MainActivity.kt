@@ -254,7 +254,13 @@ fun TipTrackerLayout() {
                         .padding(horizontal = 40.dp, vertical = 8.dp)
                 ) {
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            billAmountInput = ""
+                            tipPercentInput = ""
+                            personCountInput = ""
+                            roundUpTip = false
+                            roundUpTotal = false
+                        },
                         modifier = Modifier
                             .height(48.dp)
                             .weight(1f)
