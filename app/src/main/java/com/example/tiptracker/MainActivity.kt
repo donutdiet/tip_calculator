@@ -30,6 +30,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -108,7 +109,7 @@ fun TipTrackerLayout() {
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(id = R.string.app_name),
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.displayLarge
                     )
                 }
             })
@@ -129,6 +130,7 @@ fun TipTrackerLayout() {
             ) {
                 Text(
                     text = stringResource(R.string.calculate_tips),
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier
                         .align(alignment = Alignment.Start)
                         .padding(bottom = 16.dp)
@@ -207,12 +209,11 @@ fun TipTrackerLayout() {
                     ) {
                         Text(
                             text = stringResource(R.string.tip),
-                            fontSize = 20.sp
+                            style = MaterialTheme.typography.displayMedium
                         )
                         Text(
                             text = stringResource(R.string.money_string, tipString),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.displayMedium
                         )
                     }
                     Row(
@@ -222,12 +223,11 @@ fun TipTrackerLayout() {
                     ) {
                         Text(
                             text = stringResource(R.string.total),
-                            fontSize = 20.sp
+                            style = MaterialTheme.typography.displayMedium
                         )
                         Text(
                             text = stringResource(R.string.money_string, totalString),
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.displayMedium
                         )
                     }
                     if(personCount > 1) {
@@ -239,11 +239,11 @@ fun TipTrackerLayout() {
                         ) {
                             Text(
                                 text = stringResource(R.string.per_person),
-                                fontSize = 16.sp
+                                style = MaterialTheme.typography.labelSmall
                             )
                             Text(
                                 text = stringResource(R.string.money_string, totalPerPersonString),
-                                fontSize = 16.sp,
+                                style = MaterialTheme.typography.labelSmall
                             )
                         }
                     }
@@ -299,7 +299,7 @@ fun EditNumberField(
         label = {
             Text(
                 stringResource(label),
-                fontSize = 14.sp
+                style = MaterialTheme.typography.labelSmall
             )
         },
         leadingIcon = {
@@ -335,7 +335,8 @@ fun RoundUpRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(label)
+            text = stringResource(label),
+            style = MaterialTheme.typography.labelSmall
         )
         Switch(
             checked = roundUp,
