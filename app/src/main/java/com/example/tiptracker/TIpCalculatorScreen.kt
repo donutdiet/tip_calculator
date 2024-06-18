@@ -74,7 +74,7 @@ fun TipTrackerLayout(
     val totalPerPersonString = NumberFormat.getCurrencyInstance().format(totalPerPerson)
 
     Surface(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(contentPadding)
     ) {
