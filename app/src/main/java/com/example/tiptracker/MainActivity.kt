@@ -59,317 +59,48 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TipTrackerTheme {
-                TipTrackerLayout()
+                TipTrackerApp()
             }
         }
+    }
+}
+
+@Composable
+fun TipTrackerApp() {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = { AppTopBar() }
+    ) {
+        TipTrackerLayout(contentPadding = it)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TipTrackerLayout() {
-    var billAmountInput by remember { mutableStateOf("") }
-    var tipPercentInput by remember { mutableStateOf("") }
-    var personCountInput by remember { mutableStateOf("") }
-    var roundUpTip by remember { mutableStateOf(false) }
-    var roundUpTotal by remember { mutableStateOf(false) }
-
-    val billAmount = billAmountInput.toDoubleOrNull() ?: 0.0
-    val tipPercent = tipPercentInput.toDoubleOrNull() ?: 0.0
-    val personCount = personCountInput.toIntOrNull() ?: 1
-
-    val tipAmount = calculateTip(billAmount, tipPercent, roundUpTip, roundUpTotal)
-    val totalAmount = calculateTotal(billAmount, tipAmount)
-    val totalPerPerson = calculateTotalPerPerson(totalAmount, personCount)
-
-    val tipString = NumberFormat.getCurrencyInstance().format(tipAmount)
-    val totalString = NumberFormat.getCurrencyInstance().format(totalAmount)
-    val totalPerPersonString = NumberFormat.getCurrencyInstance().format(totalPerPerson)
-
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.tip_tracker_app_logo),
-                        contentDescription = "Tip Tracker App Logo",
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.displayLarge
-                    )
-                }
-            })
-        }
-    ) { innerPadding ->
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-        ) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .verticalScroll(rememberScrollState())
-                    .safeDrawingPadding(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+fun AppTopBar(modifier: Modifier = Modifier) {
+    CenterAlignedTopAppBar(
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Image(
+                    painter = painterResource(R.drawable.tip_tracker_app_logo),
+                    contentDescription = null,
+                    modifier = Modifier.size(48.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = stringResource(R.string.calculate_tips),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier
-                        .align(alignment = Alignment.Start)
-                        .padding(bottom = 16.dp)
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.displayLarge
                 )
-                EditNumberField(
-                    label = R.string.bill_amount,
-                    leadingIcon = R.drawable.receipt_long,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Next
-                    ),
-                    value = billAmountInput,
-                    onValueChange = { billAmountInput = it },
-                    modifier = Modifier
-                        .padding(bottom = 20.dp)
-                        .fillMaxWidth()
-                )
-                Row(
-                    modifier = Modifier
-                        .padding(bottom = 16.dp)
-                        .fillMaxWidth()
-                ) {
-                    EditNumberField(
-                        label = R.string.tip_percentage,
-                        leadingIcon = R.drawable.percent,
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Next
-                        ),
-                        value = tipPercentInput,
-                        onValueChange = { tipPercentInput = it },
-                        modifier = Modifier.weight(1f)
-                    )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    EditNumberField(
-                        label = R.string.people,
-                        leadingIcon = R.drawable.person,
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Done
-                        ),
-                        value = personCountInput,
-                        onValueChange = { personCountInput = it },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                RoundUpRow(
-                    label = R.string.round_up_tip,
-                    roundUp = roundUpTip,
-                    onRoundUpChanged = {
-                        roundUpTip = it
-                        if (roundUpTotal) {
-                            roundUpTotal = false
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 40.dp)
-                )
-                RoundUpRow(
-                    label = R.string.round_up_total,
-                    roundUp = roundUpTotal,
-                    onRoundUpChanged = {
-                        roundUpTotal = it
-                        if (roundUpTip) {
-                            roundUpTip = false
-                        }
-                    },
-                    modifier = Modifier.padding(horizontal = 40.dp)
-                )
-                Column(
-                    modifier = Modifier.padding(horizontal = 40.dp, vertical = 20.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.tip),
-                            style = MaterialTheme.typography.displayMedium
-                        )
-                        Text(
-                            text = stringResource(R.string.money_string, tipString),
-                            style = MaterialTheme.typography.displayMedium
-                        )
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = stringResource(R.string.total),
-                            style = MaterialTheme.typography.displayMedium
-                        )
-                        Text(
-                            text = stringResource(R.string.money_string, totalString),
-                            style = MaterialTheme.typography.displayMedium
-                        )
-                    }
-                    if(personCount > 1) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = stringResource(R.string.per_person),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                            Text(
-                                text = stringResource(R.string.money_string, totalPerPersonString),
-                                style = MaterialTheme.typography.labelSmall
-                            )
-                        }
-                    }
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 40.dp, vertical = 8.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            billAmountInput = ""
-                            tipPercentInput = ""
-                            personCountInput = ""
-                            roundUpTip = false
-                            roundUpTotal = false
-                        },
-                        modifier = Modifier
-                            .height(48.dp)
-                            .weight(1f)
-                    ) {
-                        Text(text = "Clear")
-                    }
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Button(
-                        onClick = { /*TODO*/ },
-                        modifier = Modifier
-                            .height(48.dp)
-                            .weight(1f)
-                    ) {
-                        Text(text = "Log")
-                    }
-                }
             }
-        }
-    }
-}
-
-@Composable
-fun EditNumberField(
-    @StringRes label: Int,
-    @DrawableRes leadingIcon: Int,
-    keyboardOptions: KeyboardOptions,
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-
-    TextField(
-        value = value,
-        label = {
-            Text(
-                stringResource(label),
-                style = MaterialTheme.typography.labelSmall
-            )
         },
-        leadingIcon = {
-            Icon(
-                painter = painterResource(leadingIcon),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(20.dp)
-                    .padding(0.dp)
-            )
-        },
-        onValueChange = onValueChange,
-        keyboardOptions = keyboardOptions,
-        keyboardActions = KeyboardActions(
-            onDone = {
-                focusManager.clearFocus()
-            }
-        ),
-        singleLine = true,
-        modifier = modifier.focusRequester(focusRequester),
+        modifier = modifier
     )
 }
 
+@Preview(showBackground = true)
 @Composable
-fun RoundUpRow(
-    @StringRes label: Int,
-    roundUp: Boolean,
-    onRoundUpChanged: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = stringResource(label),
-            style = MaterialTheme.typography.labelSmall
-        )
-        Switch(
-            checked = roundUp,
-            onCheckedChange = onRoundUpChanged,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentWidth(Alignment.End)
-        )
-    }
-}
-
-@VisibleForTesting
-internal fun calculateTip(
-    bill: Double,
-    tipPercent: Double,
-    roundUpTip: Boolean,
-    roundUpTotal: Boolean,
-): Double {
-    var tip = tipPercent / 100 * bill
-    if (roundUpTip) {
-        tip = kotlin.math.ceil(tip)
-    } else if (roundUpTotal) {
-        val total = calculateTotal(bill, tip)
-        val roundedTotal = kotlin.math.ceil(total)
-        tip = tip + roundedTotal - total
-    }
-    return tip
-}
-
-private fun calculateTotal(bill: Double, tip: Double): Double {
-    return bill + tip
-}
-
-private fun calculateTotalPerPerson(total: Double, personCount: Int): Double {
-    return total / personCount
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun TipTrackerPreview() {
+fun TipTrackerAppPreview() {
     TipTrackerTheme {
-        TipTrackerLayout()
+        TipTrackerApp()
     }
 }
