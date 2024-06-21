@@ -1,10 +1,8 @@
 package com.example.tiptracker
 
 
-import android.view.View
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -24,7 +22,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -33,9 +30,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -52,18 +47,14 @@ import com.example.tiptracker.ui.theme.TipTrackerTheme
 import java.text.NumberFormat
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TipCalculatorScreen(
     modifier: Modifier = Modifier,
     viewModel: LogViewModel = viewModel(),
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
-    var billAmount by viewModel.billAmount
-    var tipPercent by viewModel.tipPercent
-    var personCount by viewModel.personCount
-    var roundUpTip by viewModel.roundUpTip
-    var roundUpTotal by viewModel.roundUpTotal
+    val roundUpTip by viewModel.roundUpTip
+    val roundUpTotal by viewModel.roundUpTotal
 
     Surface(
         modifier = modifier
