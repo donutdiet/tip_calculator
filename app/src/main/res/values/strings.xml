@@ -10,4 +10,6 @@
     <string name="total">Total</string>
     <string name="per_person">Per Person</string>
     <string name="money_string">%s</string>
+    <string name="clear">Clear</string>
+    <string name="log">Log</string>
 </resources>

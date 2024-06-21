@@ -42,7 +42,7 @@ fun TipTrackerApp() {
         modifier = Modifier.fillMaxSize(),
         topBar = { AppTopBar() }
     ) {
-        TipTrackerLayout(contentPadding = it)
+        TipCalculatorScreen(contentPadding = it)
     }
 }
 
