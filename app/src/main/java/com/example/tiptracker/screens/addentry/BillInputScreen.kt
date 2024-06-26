@@ -1,11 +1,12 @@
-package com.example.tiptracker
+package com.example.tiptracker.screens.addentry
 
 
+import android.os.Build
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,12 +25,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,25 +43,70 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.tiptracker.ui.LogViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import java.text.NumberFormat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.tiptracker.DiningLogScreen
+import com.example.tiptracker.R
+import com.example.tiptracker.ui.LogViewModel
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun AddEntryScreen(
+    viewModel: LogViewModel,
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = DiningLogScreen.BillInput.name,
+        modifier = modifier
+    ) {
+        composable(route = DiningLogScreen.BillInput.name) {
+            BillInputScreen(
+                modifier = Modifier.fillMaxSize(),
+                onClearButtonClicked = { viewModel.clearForm() },
+                onLogButtonClicked = {
+                    if(viewModel.checkFormValidity()) {
+                        navController.navigate(DiningLogScreen.DescriptionInput.name)
+                    }
+                },
+                viewModel = viewModel
+            )
+        }
+        composable(route = DiningLogScreen.DescriptionInput.name) {
+            DiningDescriptionScreen(
+                modifier = Modifier.fillMaxSize(),
+                onCancelButtonClicked = {
+                    navController.popBackStack(
+                        DiningLogScreen.BillInput.name,
+                        inclusive = false
+                    )
+                },
+                onSaveButtonClicked = {
+                    viewModel.logEntry()
+                    navController.popBackStack(
+                        DiningLogScreen.BillInput.name,
+                        inclusive = false
+                    )
+                },
+                viewModel = viewModel
+            )
+        }
+    }
+}
 
 @Composable
-fun TipCalculatorScreen(
+fun BillInputScreen(
     modifier: Modifier = Modifier,
-    viewModel: LogViewModel = viewModel(),
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    onClearButtonClicked: () -> Unit = {},
+    onLogButtonClicked: () -> Unit = {},
+    viewModel: LogViewModel,
 ) {
-    val roundUpTip by viewModel.roundUpTip
-    val roundUpTotal by viewModel.roundUpTotal
-
-    Surface(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(contentPadding)
-    ) {
+    Surface(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 24.dp)
@@ -71,19 +117,20 @@ fun TipCalculatorScreen(
         ) {
             PageHeader(modifier = Modifier.padding(bottom = 16.dp))
             BillInputForm(
+                viewModel = viewModel,
                 billAmount = viewModel.billAmount.value,
                 tipPercent = viewModel.tipPercent.value,
                 personCount = viewModel.personCount.value
             )
             RoundUpRow(
                 label = R.string.round_up_tip,
-                roundUp = roundUpTip,
+                roundUp = viewModel.roundUpTip.value,
                 onRoundUpChanged = { viewModel.onRoundUpTipChange(it) },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             RoundUpRow(
                 label = R.string.round_up_total,
-                roundUp = roundUpTotal,
+                roundUp = viewModel.roundUpTotal.value,
                 onRoundUpChanged = { viewModel.onRoundUpTotalChange(it) },
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
@@ -92,13 +139,13 @@ fun TipCalculatorScreen(
                 total = viewModel.getCalculatedTotal(),
                 personCount = viewModel.personCount.value.toIntOrNull() ?: 1,
                 totalPerPerson = viewModel.getCalculatedTotalPerPerson(),
-                modifier = Modifier.padding(top = 16.dp, bottom = 24.dp)
+                modifier = Modifier.padding(top = 12.dp, bottom = 20.dp)
             )
-            ButtonRow(
+            TwoButtonRow(
                 buttonLabelL = R.string.clear,
                 buttonLabelR = R.string.log,
-                onButtonClickL = { viewModel.clearForm() },
-                onButtonClickR = { /*TODO*/ }
+                onButtonClickL = onClearButtonClicked,
+                onButtonClickR = onLogButtonClicked
             )
         }
     }
@@ -115,12 +162,12 @@ fun PageHeader(modifier: Modifier = Modifier) {
 
 @Composable
 fun BillInputForm(
-    viewModel: LogViewModel = viewModel(),
+    viewModel: LogViewModel,
     billAmount: String,
     tipPercent: String,
     personCount: String
 ) {
-    EditNumberField(
+    TextInputField(
         label = R.string.bill_amount,
         leadingIcon = R.drawable.receipt_long,
         keyboardOptions = KeyboardOptions.Default.copy(
@@ -130,15 +177,15 @@ fun BillInputForm(
         value = billAmount,
         onValueChange = { viewModel.onBillAmountChange(it) },
         modifier = Modifier
-            .padding(bottom = 20.dp)
+            .padding(bottom = 8.dp)
             .fillMaxWidth()
     )
     Row(
         modifier = Modifier
-            .padding(bottom = 16.dp)
+            .padding(bottom = 8.dp)
             .fillMaxWidth()
     ) {
-        EditNumberField(
+        TextInputField(
             label = R.string.tip_percentage,
             leadingIcon = R.drawable.percent,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -150,7 +197,7 @@ fun BillInputForm(
             modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.width(12.dp))
-        EditNumberField(
+        TextInputField(
             label = R.string.people,
             leadingIcon = R.drawable.person,
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -261,7 +308,7 @@ fun FinalBill(
 }
 
 @Composable
-fun ButtonRow(
+fun TwoButtonRow(
     @StringRes buttonLabelL: Int,
     @StringRes buttonLabelR: Int,
     onButtonClickL: () -> Unit,
@@ -272,7 +319,7 @@ fun ButtonRow(
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        Button(
+        OutlinedButton(
             onClick = onButtonClickL,
             shape = RoundedCornerShape(4.dp),
             modifier = Modifier
@@ -295,7 +342,7 @@ fun ButtonRow(
 }
 
 @Composable
-fun EditNumberField(
+fun TextInputField(
     @StringRes label: Int,
     @DrawableRes leadingIcon: Int,
     keyboardOptions: KeyboardOptions,
@@ -319,9 +366,7 @@ fun EditNumberField(
             Icon(
                 painter = painterResource(leadingIcon),
                 contentDescription = null,
-                modifier = Modifier
-                    .size(20.dp)
-                    .padding(0.dp)
+                modifier = Modifier.size(20.dp)
             )
         },
         onValueChange = onValueChange,
@@ -340,7 +385,7 @@ fun EditNumberField(
 @Composable
 fun TipTrackerPreview() {
     TipTrackerTheme {
-        TipCalculatorScreen()
+        BillInputScreen(viewModel = viewModel())
     }
 }
 
@@ -348,6 +393,6 @@ fun TipTrackerPreview() {
 @Composable
 fun TipTrackerPreviewDarkTheme() {
     TipTrackerTheme(darkTheme = true) {
-        TipCalculatorScreen()
+        BillInputScreen(viewModel = viewModel())
     }
 }
