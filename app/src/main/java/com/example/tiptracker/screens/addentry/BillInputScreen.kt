@@ -41,6 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tiptracker.ui.theme.TipTrackerTheme
@@ -312,12 +313,11 @@ fun TwoButtonRow(
     @StringRes buttonLabelL: Int,
     @StringRes buttonLabelR: Int,
     onButtonClickL: () -> Unit,
-    onButtonClickR: () -> Unit
+    onButtonClickR: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+        modifier = modifier
     ) {
         OutlinedButton(
             onClick = onButtonClickL,
@@ -326,7 +326,10 @@ fun TwoButtonRow(
                 .height(48.dp)
                 .weight(1f)
         ) {
-            Text(text = stringResource(buttonLabelL))
+            Text(
+                text = stringResource(buttonLabelL),
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
         Spacer(modifier = Modifier.width(12.dp))
         Button(
@@ -358,7 +361,9 @@ fun TextInputField(
         label = {
             Text(
                 stringResource(label),
-                style = MaterialTheme.typography.labelSmall
+                style = MaterialTheme.typography.labelSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         },
         textStyle = MaterialTheme.typography.labelMedium,

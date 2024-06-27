@@ -35,7 +35,7 @@ object UserStats {
         val spend = diningLogs.sumOf { it.totalAmount }
         val tips = diningLogs.sumOf { it.tipAmount }
         val visits = diningLogs.size
-        val avgBill = diningLogs.sumOf { it.billAmount }
+        val avgBill = if (visits > 0) diningLogs.sumOf { it.billAmount } / visits else 0.0
         val avgTip = if (visits > 0) tips / visits else 0.0
         val avgSpend = if (visits > 0) spend / visits else 0.0
         val avgTipPercent = if (avgSpend > 0) avgTip / avgSpend * 100 else 0.0

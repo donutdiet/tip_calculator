@@ -124,7 +124,10 @@ class LogViewModel : ViewModel() {
     fun checkFormValidity(): Boolean {
         val billAmountDouble = billAmount.value.toDoubleOrNull() ?: 0.0
         val tipPercentDouble = tipPercent.value.toDoubleOrNull() ?: 0.0
-        return billAmountDouble >= 0.0 && tipPercentDouble >= 0.0
+        // Ensure party size is an integer; default to 1 if left empty
+        var partySize = personCount.value.toIntOrNull()
+        if(personCount.value.isEmpty()) partySize = 1
+        return billAmountDouble >= 0.0 && tipPercentDouble >= 0.0 && partySize != null
     }
 
     fun clearForm() {

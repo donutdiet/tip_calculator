@@ -141,7 +141,7 @@ fun DiningEntry(
                     )
                 }
             }
-            if (!expanded) {
+            if (expanded) {
                 Text(
                     text = log.restaurantDescription,
                     style = MaterialTheme.typography.bodyMedium,
