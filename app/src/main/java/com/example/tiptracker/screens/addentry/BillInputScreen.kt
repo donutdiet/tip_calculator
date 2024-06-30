@@ -3,7 +3,6 @@ package com.example.tiptracker.screens.addentry
 
 import android.os.Build
 import androidx.annotation.DrawableRes
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -47,58 +46,8 @@ import androidx.compose.ui.unit.dp
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import java.text.NumberFormat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.example.tiptracker.DiningLogScreen
 import com.example.tiptracker.R
 import com.example.tiptracker.ui.LogViewModel
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun AddEntryScreen(
-    viewModel: LogViewModel,
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
-    NavHost(
-        navController = navController,
-        startDestination = DiningLogScreen.BillInput.name,
-        modifier = modifier
-    ) {
-        composable(route = DiningLogScreen.BillInput.name) {
-            BillInputScreen(
-                modifier = Modifier.fillMaxSize(),
-                onClearButtonClicked = { viewModel.clearForm() },
-                onLogButtonClicked = {
-                    if(viewModel.checkFormValidity()) {
-                        navController.navigate(DiningLogScreen.DescriptionInput.name)
-                    }
-                },
-                viewModel = viewModel
-            )
-        }
-        composable(route = DiningLogScreen.DescriptionInput.name) {
-            DiningDescriptionScreen(
-                modifier = Modifier.fillMaxSize(),
-                onCancelButtonClicked = {
-                    navController.popBackStack(
-                        DiningLogScreen.BillInput.name,
-                        inclusive = false
-                    )
-                },
-                onSaveButtonClicked = {
-                    viewModel.logEntry()
-                    navController.popBackStack(
-                        DiningLogScreen.BillInput.name,
-                        inclusive = false
-                    )
-                },
-                viewModel = viewModel
-            )
-        }
-    }
-}
 
 @Composable
 fun BillInputScreen(
@@ -116,7 +65,10 @@ fun BillInputScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            PageHeader(modifier = Modifier.padding(bottom = 16.dp))
+            PageHeader(
+                textId = R.string.calculate_tips,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
             BillInputForm(
                 viewModel = viewModel,
                 billAmount = viewModel.billAmount.value,
@@ -153,9 +105,12 @@ fun BillInputScreen(
 }
 
 @Composable
-fun PageHeader(modifier: Modifier = Modifier) {
+fun PageHeader(
+    @StringRes textId: Int,
+    modifier: Modifier = Modifier
+) {
     Text(
-        text = stringResource(R.string.calculate_tips),
+        text = stringResource(textId),
         style = MaterialTheme.typography.bodyLarge,
         modifier = modifier
     )

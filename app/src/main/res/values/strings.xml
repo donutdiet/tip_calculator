@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Tip Tracker</string>
-    <string name="calculate_tips">Calculate Tips</string>
+    <string name="calculate_tips">Calculate tips</string>
     <string name="bill_amount">Bill Amount</string>
     <string name="tip_percentage">Tip Percent</string>
     <string name="people">People</string>
@@ -17,4 +17,7 @@
     <string name="restaurant_description">What made this experience memorable?</string>
     <string name="cancel">Cancel</string>
     <string name="log">Log</string>
+
+    <string name="edit_dining_entry">Edit dining entry</string>
+    <string name="tip_amount">Tip Amount</string>
 </resources>

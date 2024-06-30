@@ -75,6 +75,9 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.gson)
 
+    implementation(libs.core)
+    implementation(libs.calendar)
+
     debugImplementation(libs.androidx.ui.test.manifest)
     debugImplementation(libs.androidx.ui.tooling)
 

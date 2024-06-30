@@ -1,23 +1,35 @@
 package com.example.tiptracker.screens.addentry
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -32,7 +44,15 @@ import com.example.tiptracker.R
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tiptracker.ui.LogViewModel
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DiningDescriptionScreen(
     modifier: Modifier = Modifier,
@@ -40,6 +60,20 @@ fun DiningDescriptionScreen(
     onSaveButtonClicked: () -> Unit = {},
     viewModel: LogViewModel,
 ) {
+    val calendarState = rememberSheetState()
+
+    CalendarDialog(
+        state = calendarState,
+        config = CalendarConfig(
+            monthSelection = true,
+            yearSelection = true
+        ),
+        selection = CalendarSelection.Date { date ->
+            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+            viewModel.onDateChange(date.format(formatter))
+        }
+    )
+
     Surface(
         modifier = modifier.fillMaxSize()
     ) {
@@ -80,15 +114,20 @@ fun DiningDescriptionScreen(
                 modifier = Modifier
                     .fillMaxWidth()
             )
+            DatePickerDisplay(
+                viewModel = viewModel,
+                calendarState = calendarState,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
             FinalBill(
                 tip = viewModel.getCalculatedTip(),
                 total = viewModel.getCalculatedTotal(),
                 personCount = viewModel.personCount.value.toIntOrNull() ?: 1,
                 totalPerPerson = viewModel.getCalculatedTotalPerPerson(),
-                modifier = Modifier.padding(vertical = 20.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             )
             TwoButtonRow(
-                buttonLabelL = R.string.cancel ,
+                buttonLabelL = R.string.cancel,
                 buttonLabelR = R.string.save,
                 onButtonClickL = onCancelButtonClicked,
                 onButtonClickR = onSaveButtonClicked
@@ -131,6 +170,47 @@ fun MultiLineTextInputField(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DatePickerDisplay(
+    viewModel: LogViewModel,
+    calendarState: com.maxkeppeker.sheets.core.models.base.SheetState,
+    modifier: Modifier = Modifier
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.fillMaxHeight()
+    ) {
+        Text(
+            text = "Date: ",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Text(
+            text = viewModel.date.value,
+            style = MaterialTheme.typography.labelMedium
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        OutlinedButton(
+            onClick = {
+                coroutineScope.launch {
+                    calendarState.show()
+                }
+            },
+            shape = RoundedCornerShape(4.dp),
+            modifier = Modifier.height(40.dp)
+        ) {
+            Text(
+                text = "Edit date",
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun DiningDescriptionScreenPreview() {
@@ -139,6 +219,7 @@ fun DiningDescriptionScreenPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun DiningDescriptionScreenPreviewDarkMode() {

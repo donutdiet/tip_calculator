@@ -3,9 +3,11 @@ package com.example.tiptracker.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.example.tiptracker.data.DiningLogData
 import com.example.tiptracker.data.UserStats
@@ -13,6 +15,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.UUID
 
 class LogViewModel : ViewModel() {
     var diningLogs = mutableStateListOf<DiningLogData>()
@@ -54,6 +57,7 @@ class LogViewModel : ViewModel() {
         private set
     var roundUpTotal = mutableStateOf(false)
         private set
+
     var restaurantName = mutableStateOf("")
         private set
     var restaurantDescription = mutableStateOf("")
@@ -93,6 +97,10 @@ class LogViewModel : ViewModel() {
 
     fun onRestaurantDescriptionChange(newDescription: String) {
         restaurantDescription.value = newDescription
+    }
+
+    fun onDateChange(newDate: String) {
+        date.value = newDate
     }
 
     fun getCalculatedTip(): Double {
@@ -141,12 +149,15 @@ class LogViewModel : ViewModel() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    fun updateCurrentDate() {
+        val currentDate = LocalDate.now()
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+        date.value = currentDate.format(formatter)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     fun logEntry() {
-        if(date.value.isEmpty()) {
-            val currentDate = LocalDate.now()
-            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-            date.value = currentDate.format(formatter)
-        }
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
         val billAmountDouble = billAmount.value.toDoubleOrNull() ?: 0.0
         val tipPercentDouble = tipPercent.value.toDoubleOrNull() ?: 0.0
         val tipAmountDouble = getCalculatedTip()
@@ -156,8 +167,6 @@ class LogViewModel : ViewModel() {
             billAmount = billAmountDouble,
             tipPercent = tipPercentDouble, // Assuming tipPercent should be a Double
             tipAmount = tipAmountDouble,
-            roundUpTip = roundUpTip.value,
-            roundUpTotal = roundUpTotal.value,
             personCount = personCount.value.toIntOrNull() ?: 1,
             totalAmount = totalAmountDouble,
             totalAmountPerPerson = totalPerPersonDouble,
@@ -165,11 +174,66 @@ class LogViewModel : ViewModel() {
             restaurantDescription = restaurantDescription.value,
             date = date.value
         )
-        diningLogs.add(0, diningEntry)
+        diningLogs.add(diningEntry)
+        diningLogs.sortByDescending { LocalDate.parse(it.date, formatter) }
         saveLogs()
         UserStats.updateUserStats(diningLogs)
         clearForm()
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun updateEntry(
+        id: UUID,
+        newBillAmount: String,
+        newTipPercent: Double,
+        newTipAmount: String,
+        newPersonCount: String,
+        newTotalAmount: Double,
+        newTotalAmountPerPerson: Double,
+        newRestaurantName: String,
+        newRestaurantDescription: String,
+        newDate: String
+    ) {
+        try {
+            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+            val index = diningLogs.indexOfFirst { it.id == id }
+            if (index != -1) {
+                val oldEntry = diningLogs[index]
+
+                val newBillAmountDouble = newBillAmount.toDoubleOrNull() ?: 0.0
+                val newTipAmountDouble = newTipAmount.toDoubleOrNull() ?: 0.0
+                val newPersonCountInt = newPersonCount.toIntOrNull() ?: 1
+
+                val updatedDiningEntry = oldEntry.copy(
+                    billAmount = newBillAmountDouble,
+                    tipPercent = newTipPercent,
+                    tipAmount = newTipAmountDouble,
+                    personCount = newPersonCountInt,
+                    totalAmount = newTotalAmount,
+                    totalAmountPerPerson = newTotalAmountPerPerson,
+                    restaurantName = newRestaurantName,
+                    restaurantDescription = newRestaurantDescription,
+                    date = newDate
+                )
+
+                // Print debug information
+                println("Old Entry: $oldEntry")
+                println("Updated Entry: $updatedDiningEntry")
+
+                diningLogs[index] = updatedDiningEntry
+                diningLogs.sortByDescending { LocalDate.parse(it.date, formatter) }
+
+                saveLogs()
+                UserStats.updateUserStats(diningLogs)
+            } else {
+                println("Entry with ID $id not found.")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println("Error updating entry: ${e.message}")
+        }
+    }
+
 
     fun deleteEntry(index: Int) {
         diningLogs.removeAt(index)

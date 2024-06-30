@@ -36,16 +36,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tiptracker.data.BottomBarNavItem
-import com.example.tiptracker.screens.DiningLogsScreen
+import com.example.tiptracker.screens.logs.DiningLogsScreen
 import com.example.tiptracker.screens.ProfileScreen
-import com.example.tiptracker.screens.addentry.AddEntryScreen
+import com.example.tiptracker.screens.addentry.AddEntryFormNavHost
+import com.example.tiptracker.screens.logs.DiningLogsNavHost
+import com.example.tiptracker.ui.EditLogViewModel
 import com.example.tiptracker.ui.LogViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
-
-enum class DiningLogScreen {
-    BillInput,
-    DescriptionInput
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,20 +71,22 @@ fun AppTopBar(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ContentScreen(
-    viewModel: LogViewModel,
+    logViewModel: LogViewModel,
+    editLogViewModel: EditLogViewModel,
     navController: NavHostController,
     selectedIndex: Int,
     modifier: Modifier = Modifier
 ) {
     when (selectedIndex) {
-        0 -> DiningLogsScreen(
-            diningLogs = viewModel.diningLogs,
-            modifier = modifier.fillMaxSize(),
-            viewModel = viewModel
+        0 -> DiningLogsNavHost(
+            logViewModel = logViewModel,
+            editLogViewModel = editLogViewModel,
+            navController = navController,
+            modifier = modifier
         )
 
-        1 -> AddEntryScreen(
-            viewModel = viewModel,
+        1 -> AddEntryFormNavHost(
+            viewModel = logViewModel,
             navController = navController,
             modifier = modifier
         )
@@ -133,13 +132,14 @@ fun AppBottomBar(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun TipTrackerApp(
-    viewModel: LogViewModel = viewModel(),
+    logViewModel: LogViewModel = viewModel(),
+    editLogViewModel: EditLogViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.initialize(context)
+        logViewModel.initialize(context)
     }
 
     var selectedIndex by remember { mutableIntStateOf(1) }
@@ -162,7 +162,8 @@ fun TipTrackerApp(
         }
     ) { innerPadding ->
         ContentScreen(
-            viewModel = viewModel,
+            logViewModel = logViewModel,
+            editLogViewModel = editLogViewModel,
             navController = navController,
             selectedIndex = selectedIndex,
             modifier = Modifier.padding(innerPadding)
