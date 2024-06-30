@@ -36,7 +36,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.tiptracker.data.BottomBarNavItem
-import com.example.tiptracker.screens.logs.DiningLogsScreen
 import com.example.tiptracker.screens.ProfileScreen
 import com.example.tiptracker.screens.addentry.AddEntryFormNavHost
 import com.example.tiptracker.screens.logs.DiningLogsNavHost

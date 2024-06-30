@@ -1,7 +1,6 @@
 package com.example.tiptracker.screens.logs
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,7 +35,6 @@ import com.example.tiptracker.screens.addentry.PageHeader
 import com.example.tiptracker.ui.LogViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tiptracker.screens.addentry.DatePickerDisplay
 import com.example.tiptracker.screens.addentry.MultiLineTextInputField
 import com.example.tiptracker.screens.addentry.TextInputField
 import com.example.tiptracker.screens.addentry.TwoButtonRow
@@ -209,45 +207,6 @@ fun BillEditForm(
 }
 
 @Composable
-fun DatePickerDisplay(
-    viewModel: LogViewModel,
-    calendarState: com.maxkeppeker.sheets.core.models.base.SheetState,
-    modifier: Modifier = Modifier
-) {
-    val coroutineScope = rememberCoroutineScope()
-
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.fillMaxHeight()
-    ) {
-        Text(
-            text = "Date: ",
-            style = MaterialTheme.typography.bodyLarge
-        )
-        Text(
-            text = viewModel.date.value,
-            style = MaterialTheme.typography.labelMedium
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        OutlinedButton(
-            onClick = {
-                coroutineScope.launch {
-                    calendarState.show()
-                }
-            },
-            shape = RoundedCornerShape(4.dp),
-            modifier = Modifier.height(40.dp)
-        ) {
-            Text(
-                text = "Edit date",
-                style = MaterialTheme.typography.labelSmall
-            )
-        }
-    }
-}
-
-@Composable
 fun FinalBill(
     tip: Double,
     total: Double,
@@ -358,7 +317,6 @@ fun DatePickerDisplay(
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun EditLogScreenPreview() {

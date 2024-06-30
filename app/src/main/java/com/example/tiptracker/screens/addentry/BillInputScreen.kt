@@ -1,7 +1,6 @@
 package com.example.tiptracker.screens.addentry
 
 
-import android.os.Build
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement

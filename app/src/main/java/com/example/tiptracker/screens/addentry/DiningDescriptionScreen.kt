@@ -1,7 +1,6 @@
 package com.example.tiptracker.screens.addentry
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
@@ -170,7 +169,6 @@ fun MultiLineTextInputField(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerDisplay(
     viewModel: LogViewModel,

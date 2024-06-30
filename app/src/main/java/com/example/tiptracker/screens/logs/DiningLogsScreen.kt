@@ -1,7 +1,6 @@
 package com.example.tiptracker.screens.logs
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -9,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -17,7 +15,6 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -31,14 +28,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -52,7 +47,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -62,8 +56,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.example.tiptracker.R
 import com.example.tiptracker.data.DiningLogData
 import com.example.tiptracker.ui.EditLogViewModel
@@ -93,7 +85,7 @@ fun DiningLogsScreen(
             itemsIndexed(diningLogs) { index, log ->
                 var boxSize by remember { mutableFloatStateOf(0F) }
                 val scope = rememberCoroutineScope()
-                val anchors = DraggableAnchors<HorizontalDragValue> {
+                val anchors = DraggableAnchors {
                     HorizontalDragValue.Settled at 0f
                     HorizontalDragValue.StartToEnd at boxSize / 3
                     HorizontalDragValue.EndToStart at -boxSize * 2 / 5
@@ -195,9 +187,7 @@ fun DiningLogsScreen(
                     ) {
                         DiningEntry(
                             log = log,
-                            index = index,
                             modifier = Modifier.padding(vertical = 4.dp),
-                            logViewModel = logViewModel
                         )
                     }
                 }
@@ -219,9 +209,7 @@ fun DiningLogsScreen(
 @Composable
 fun DiningEntry(
     log: DiningLogData,
-    index: Int,
     modifier: Modifier = Modifier,
-    logViewModel: LogViewModel
 ) {
     val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance()
     var expanded by remember { mutableStateOf(false) }
@@ -319,9 +307,7 @@ fun DiningEntryPreview() {
                 restaurantName = "Sesame Sea Asian Bistro",
                 restaurantDescription = "Very nice food w/ good service. Some options were not halal though, so be aware. Alhamdulillah",
                 date = "June 24, 2024"
-            ),
-            index = 0,
-            logViewModel = viewModel()
+            )
         )
     }
 }
