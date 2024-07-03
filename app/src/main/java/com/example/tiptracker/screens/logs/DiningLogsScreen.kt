@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -75,7 +76,7 @@ fun DiningLogsScreen(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     logViewModel: LogViewModel,
     editLogViewModel: EditLogViewModel,
-    onEditButtonClicked: () -> Unit,
+    onEditButtonClicked: (Int) -> Unit,
 ) {
     if (logViewModel.diningLogs.size > 0) {
         LazyColumn(
@@ -136,13 +137,7 @@ fun DiningLogsScreen(
                                 .weight(1f)
                                 .fillMaxSize()
                                 .background(MaterialTheme.colorScheme.tertiary)
-                                .clickable {
-                                    editLogViewModel.loadCurrentLogData(
-                                        diningLogs = diningLogs,
-                                        index = index
-                                    )
-                                    onEditButtonClicked()
-                                },
+                                .clickable { onEditButtonClicked(index) },
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
@@ -217,6 +212,7 @@ fun DiningEntry(
         modifier = modifier
             .clickable { expanded = !expanded },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {

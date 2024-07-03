@@ -39,7 +39,7 @@ class LogViewModel : ViewModel() {
     private fun loadLogs() {
         val gson = Gson()
         val json = sharedPreferences.getString("dining_logs", "")
-        if(!json.isNullOrEmpty()) {
+        if (!json.isNullOrEmpty()) {
             val type = object : TypeToken<List<DiningLogData>>() {}.type
             val logs: List<DiningLogData> = gson.fromJson(json, type)
             diningLogs.clear()
@@ -79,14 +79,14 @@ class LogViewModel : ViewModel() {
 
     fun onRoundUpTipChange(newOption: Boolean) {
         roundUpTip.value = newOption
-        if(newOption) {
+        if (newOption) {
             roundUpTotal.value = false
         }
     }
 
     fun onRoundUpTotalChange(newOption: Boolean) {
         roundUpTotal.value = newOption
-        if(newOption) {
+        if (newOption) {
             roundUpTip.value = false
         }
     }
@@ -106,10 +106,10 @@ class LogViewModel : ViewModel() {
     fun getCalculatedTip(): Double {
         val billAmount = billAmount.value.toDoubleOrNull() ?: 0.0
         val tipPercent = tipPercent.value.toDoubleOrNull() ?: 0.0
-        var tip = billAmount * tipPercent / 100
-        if(roundUpTip.value) {
+        var tip = Math.round((billAmount * tipPercent / 100) * 100) / 100.0
+        if (roundUpTip.value) {
             tip = kotlin.math.ceil(tip)
-        } else if(roundUpTotal.value) {
+        } else if (roundUpTotal.value) {
             val total = billAmount + tip
             val roundedTotal = kotlin.math.ceil(total)
             tip = tip + roundedTotal - total
@@ -120,13 +120,15 @@ class LogViewModel : ViewModel() {
     fun getCalculatedTotal(): Double {
         val billAmount = billAmount.value.toDoubleOrNull() ?: 0.0
         val tip = getCalculatedTip()
-        return billAmount + tip
+        val total = Math.round((billAmount + tip) * 100) / 100.0
+        return total
     }
 
     fun getCalculatedTotalPerPerson(): Double {
         val total = getCalculatedTotal()
         val personCount = personCount.value.toIntOrNull() ?: 1
-        return total / personCount
+        val totalPerPerson = Math.round((total / personCount) * 100) / 100.0
+        return totalPerPerson
     }
 
     fun checkFormValidity(): Boolean {
@@ -134,7 +136,7 @@ class LogViewModel : ViewModel() {
         val tipPercentDouble = tipPercent.value.toDoubleOrNull() ?: 0.0
         // Ensure party size is an integer; default to 1 if left empty
         var partySize = personCount.value.toIntOrNull()
-        if(personCount.value.isEmpty()) partySize = 1
+        if (personCount.value.isEmpty()) partySize = 1
         return billAmountDouble >= 0.0 && tipPercentDouble >= 0.0 && partySize != null
     }
 
@@ -194,43 +196,38 @@ class LogViewModel : ViewModel() {
         newRestaurantDescription: String,
         newDate: String
     ) {
-        try {
-            val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-            val index = diningLogs.indexOfFirst { it.id == id }
-            if (index != -1) {
-                val oldEntry = diningLogs[index]
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
+        val index = diningLogs.indexOfFirst { it.id == id }
+        if (index != -1) {
+            val oldEntry = diningLogs[index]
 
-                val newBillAmountDouble = newBillAmount.toDoubleOrNull() ?: 0.0
-                val newTipAmountDouble = newTipAmount.toDoubleOrNull() ?: 0.0
-                val newPersonCountInt = newPersonCount.toIntOrNull() ?: 1
+            val newBillAmountDouble = newBillAmount.toDoubleOrNull() ?: 0.0
+            val newTipAmountDouble = newTipAmount.toDoubleOrNull() ?: 0.0
+            val newPersonCountInt = newPersonCount.toIntOrNull() ?: 1
 
-                val updatedDiningEntry = oldEntry.copy(
-                    billAmount = newBillAmountDouble,
-                    tipPercent = newTipPercent,
-                    tipAmount = newTipAmountDouble,
-                    personCount = newPersonCountInt,
-                    totalAmount = newTotalAmount,
-                    totalAmountPerPerson = newTotalAmountPerPerson,
-                    restaurantName = newRestaurantName,
-                    restaurantDescription = newRestaurantDescription,
-                    date = newDate
-                )
+            val updatedDiningEntry = oldEntry.copy(
+                billAmount = newBillAmountDouble,
+                tipPercent = newTipPercent,
+                tipAmount = newTipAmountDouble,
+                personCount = newPersonCountInt,
+                totalAmount = newTotalAmount,
+                totalAmountPerPerson = newTotalAmountPerPerson,
+                restaurantName = newRestaurantName,
+                restaurantDescription = newRestaurantDescription,
+                date = newDate
+            )
 
-                // Print debug information
-                println("Old Entry: $oldEntry")
-                println("Updated Entry: $updatedDiningEntry")
+            // Print debug information
+            println("Old Entry: $oldEntry")
+            println("Updated Entry: $updatedDiningEntry")
 
-                diningLogs[index] = updatedDiningEntry
-                diningLogs.sortByDescending { LocalDate.parse(it.date, formatter) }
+            diningLogs[index] = updatedDiningEntry
+            diningLogs.sortByDescending { LocalDate.parse(it.date, formatter) }
 
-                saveLogs()
-                UserStats.updateUserStats(diningLogs)
-            } else {
-                println("Entry with ID $id not found.")
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            println("Error updating entry: ${e.message}")
+            saveLogs()
+            UserStats.updateUserStats(diningLogs)
+        } else {
+            println("Entry with ID $id not found.")
         }
     }
 

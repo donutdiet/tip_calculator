@@ -34,7 +34,13 @@ fun DiningLogsNavHost(
                 diningLogs = logViewModel.diningLogs,
                 logViewModel = logViewModel,
                 editLogViewModel = editLogViewModel,
-                onEditButtonClicked = { navController.navigate(DiningLogsScreens.EditLogs.name) },
+                onEditButtonClicked = {
+                    editLogViewModel.loadCurrentLogData(
+                        diningLogs = logViewModel.diningLogs,
+                        index = it
+                    )
+                    navController.navigate(DiningLogsScreens.EditLogs.name)
+                },
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -46,6 +52,19 @@ fun DiningLogsNavHost(
                     navController.navigate(DiningLogsScreens.DiningLogs.name)
                 },
                 onSaveButtonClicked = {
+                    logViewModel.updateEntry(
+                        id = editLogViewModel.id,
+                        newBillAmount = editLogViewModel.tempBillAmount.value,
+                        newTipPercent = editLogViewModel.getCalculatedTipPercent(),
+                        newTipAmount = editLogViewModel.tempTipAmount.value,
+                        newPersonCount = editLogViewModel.tempPersonCount.value,
+                        newTotalAmount = editLogViewModel.getCalculatedTotal(),
+                        newTotalAmountPerPerson = editLogViewModel.getCalculatedTotalPerPerson(),
+                        newRestaurantName = editLogViewModel.tempRestaurantName.value,
+                        newRestaurantDescription = editLogViewModel.tempRestaurantDescription.value,
+                        newDate = editLogViewModel.tempDate.value
+                    )
+                    editLogViewModel.clearForm()
                     navController.navigate(DiningLogsScreens.DiningLogs.name)
                 },
                 editLogViewModel = editLogViewModel,

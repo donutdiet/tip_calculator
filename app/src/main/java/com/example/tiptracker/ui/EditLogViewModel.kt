@@ -48,19 +48,19 @@ class EditLogViewModel : ViewModel() {
     fun getCalculatedTipPercent(): Double {
         val billAmountDouble = tempBillAmount.value.toDoubleOrNull() ?: 0.0
         val tipAmountDouble = tempTipAmount.value.toDoubleOrNull() ?: 0.0
-        return if(billAmountDouble > 0) tipAmountDouble / billAmountDouble else 0.0
+        return if(billAmountDouble > 0) Math.round((tipAmountDouble / billAmountDouble) * 10) / 100.0 else 0.0
     }
 
     fun getCalculatedTotal(): Double {
         val billAmountDouble = tempBillAmount.value.toDoubleOrNull() ?: 0.0
         val tipAmountDouble = tempTipAmount.value.toDoubleOrNull() ?: 0.0
-        return billAmountDouble + tipAmountDouble
+        return Math.round((billAmountDouble + tipAmountDouble) * 100) / 100.0
     }
 
     fun getCalculatedTotalPerPerson(): Double {
         val total = getCalculatedTotal()
         val partySize = tempPersonCount.value.toIntOrNull() ?: 1
-        return total / partySize
+        return Math.round((total / partySize) * 100) / 100.0
     }
 
     fun loadCurrentLogData(diningLogs: List<DiningLogData>, index: Int) {

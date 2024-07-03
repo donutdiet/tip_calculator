@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.tiptracker.screens.logs.DiningLogsScreens
 import com.example.tiptracker.ui.LogViewModel
 
 enum class DiningInputScreens {
@@ -54,6 +55,7 @@ fun AddEntryFormNavHost(
                         DiningInputScreens.BillInput.name,
                         inclusive = false
                     )
+                    navController.navigate(DiningLogsScreens.DiningLogs.name)
                 },
                 viewModel = viewModel
             )

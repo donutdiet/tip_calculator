@@ -130,22 +130,7 @@ fun EditLogScreen(
                 buttonLabelL = R.string.cancel,
                 buttonLabelR = R.string.save,
                 onButtonClickL = onCancelButtonClicked,
-                onButtonClickR = {
-                    logViewModel.updateEntry(
-                        id = editLogViewModel.id,
-                        newBillAmount = editLogViewModel.tempBillAmount.value,
-                        newTipPercent = editLogViewModel.getCalculatedTipPercent(),
-                        newTipAmount = editLogViewModel.tempTipAmount.value,
-                        newPersonCount = editLogViewModel.tempPersonCount.value,
-                        newTotalAmount = editLogViewModel.getCalculatedTotal(),
-                        newTotalAmountPerPerson = editLogViewModel.getCalculatedTotalPerPerson(),
-                        newRestaurantName = editLogViewModel.tempRestaurantName.value,
-                        newRestaurantDescription = editLogViewModel.tempRestaurantDescription.value,
-                        newDate = editLogViewModel.tempDate.value
-                    )
-                    editLogViewModel.clearForm()
-                    onSaveButtonClicked()
-                },
+                onButtonClickR = onSaveButtonClicked,
                 modifier = Modifier.padding(top = 16.dp)
             )
         }

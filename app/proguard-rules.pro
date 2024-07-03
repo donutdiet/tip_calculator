@@ -29,3 +29,16 @@
 
 # Application classes that use Gson
 -keep class com.example.tiptracker.** { *; }
+
+# Keep class members that use Gson annotations
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# Keep classes that use Gson
+-keep class com.google.gson.** { *; }
+
+# Keep the DiningLogData class and all its fields and methods
+-keepclassmembers class com.example.tiptracker.data.DiningLogData {
+    *;
+}
