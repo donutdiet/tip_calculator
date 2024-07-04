@@ -54,7 +54,6 @@ fun EditLogScreen(
     modifier: Modifier = Modifier,
     onCancelButtonClicked: () -> Unit,
     onSaveButtonClicked: () -> Unit,
-    logViewModel: LogViewModel,
     editLogViewModel: EditLogViewModel
 ) {
     val calendarState = rememberSheetState()
@@ -307,7 +306,6 @@ fun DatePickerDisplay(
 fun EditLogScreenPreview() {
     TipTrackerTheme {
         EditLogScreen(
-            logViewModel = viewModel(),
             editLogViewModel = viewModel(),
             onCancelButtonClicked = {},
             onSaveButtonClicked = {},

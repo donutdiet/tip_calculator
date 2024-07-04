@@ -12,7 +12,8 @@ data class DiningLogData(
     val totalAmountPerPerson: Double,
     val restaurantName: String,
     val restaurantDescription: String,
-    val date: String
+    val date: String,
+    var favorite: Boolean = false
 )
 
 object UserStats {
@@ -34,6 +35,13 @@ object UserStats {
     var averagePartySize: Double = 0.0
         private set
 
+    var highestSpendLogId: UUID? = null
+        private set
+    var highestTipPercentLogId: UUID? = null
+        private set
+    var highestPartySizeLogId: UUID? = null
+        private set
+
     fun updateUserStats(diningLogs: List<DiningLogData>) {
         val spend = diningLogs.sumOf { it.totalAmount }
         val tips = diningLogs.sumOf { it.tipAmount }
@@ -53,5 +61,17 @@ object UserStats {
         averageTipPercent = avgTipPercent
         averageSpend = avgSpend
         averagePartySize = avgPartySize
+    }
+
+    fun updateLogRecords(diningLogs: List<DiningLogData>) {
+        if (diningLogs.isNotEmpty()) {
+            highestSpendLogId = diningLogs.maxByOrNull { it.totalAmount }?.id
+            highestTipPercentLogId = diningLogs.maxByOrNull { it.tipPercent }?.id
+            highestPartySizeLogId = diningLogs.maxByOrNull { it.personCount }?.id
+        } else {
+            highestSpendLogId = null
+            highestTipPercentLogId = null
+            highestPartySizeLogId = null
+        }
     }
 }

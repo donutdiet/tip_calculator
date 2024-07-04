@@ -33,7 +33,9 @@ fun DiningLogsNavHost(
             DiningLogsScreen(
                 diningLogs = logViewModel.diningLogs,
                 logViewModel = logViewModel,
-                editLogViewModel = editLogViewModel,
+                onFavoriteButtonClicked = {
+                    logViewModel.onFavoriteButtonClicked(it)
+                },
                 onEditButtonClicked = {
                     editLogViewModel.loadCurrentLogData(
                         diningLogs = logViewModel.diningLogs,
@@ -41,12 +43,14 @@ fun DiningLogsNavHost(
                     )
                     navController.navigate(DiningLogsScreens.EditLogs.name)
                 },
+                onDeleteButtonClicked = {
+                    logViewModel.deleteEntry(it)
+                },
                 modifier = Modifier.fillMaxSize()
             )
         }
         composable(route = DiningLogsScreens.EditLogs.name) {
             EditLogScreen(
-                logViewModel = logViewModel,
                 onCancelButtonClicked = {
                     editLogViewModel.clearForm()
                     navController.navigate(DiningLogsScreens.DiningLogs.name)

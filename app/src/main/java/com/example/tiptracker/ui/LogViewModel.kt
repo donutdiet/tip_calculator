@@ -3,11 +3,9 @@ package com.example.tiptracker.ui
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import com.example.tiptracker.data.DiningLogData
 import com.example.tiptracker.data.UserStats
@@ -26,6 +24,7 @@ class LogViewModel : ViewModel() {
         // will sometimes cause the app to break i will figure out why when i learn more abt databases
         loadLogs()
         UserStats.updateUserStats(diningLogs)
+        UserStats.updateLogRecords(diningLogs)
     }
 
     private fun saveLogs() {
@@ -101,6 +100,11 @@ class LogViewModel : ViewModel() {
 
     fun onDateChange(newDate: String) {
         date.value = newDate
+    }
+
+    fun onFavoriteButtonClicked(index: Int) {
+        diningLogs[index].favorite = !diningLogs[index].favorite
+        saveLogs()
     }
 
     fun getCalculatedTip(): Double {
@@ -180,6 +184,7 @@ class LogViewModel : ViewModel() {
         diningLogs.sortByDescending { LocalDate.parse(it.date, formatter) }
         saveLogs()
         UserStats.updateUserStats(diningLogs)
+        UserStats.updateLogRecords(diningLogs)
         clearForm()
     }
 
@@ -226,6 +231,7 @@ class LogViewModel : ViewModel() {
 
             saveLogs()
             UserStats.updateUserStats(diningLogs)
+            UserStats.updateLogRecords(diningLogs)
         } else {
             println("Entry with ID $id not found.")
         }
@@ -236,5 +242,6 @@ class LogViewModel : ViewModel() {
         diningLogs.removeAt(index)
         saveLogs()
         UserStats.updateUserStats(diningLogs)
+        UserStats.updateLogRecords(diningLogs)
     }
 }

@@ -8,7 +8,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
@@ -25,6 +24,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -59,7 +60,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.tiptracker.R
 import com.example.tiptracker.data.DiningLogData
-import com.example.tiptracker.ui.EditLogViewModel
 import com.example.tiptracker.ui.LogViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import kotlinx.coroutines.launch
@@ -75,8 +75,9 @@ fun DiningLogsScreen(
     diningLogs: List<DiningLogData>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     logViewModel: LogViewModel,
-    editLogViewModel: EditLogViewModel,
+    onFavoriteButtonClicked: (Int) -> Unit,
     onEditButtonClicked: (Int) -> Unit,
+    onDeleteButtonClicked: (Int) -> Unit
 ) {
     if (logViewModel.diningLogs.size > 0) {
         LazyColumn(
@@ -116,13 +117,18 @@ fun DiningLogsScreen(
                             .align(Alignment.CenterStart)
                             .clickable {
                                 scope.launch { state.animateTo(HorizontalDragValue.Settled) }
+                                onFavoriteButtonClicked(index)
                             },
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Default.Favorite,
                             contentDescription = "Favorite",
-                            tint = MaterialTheme.colorScheme.surface
+                            tint = if(diningLogs[index].favorite) {
+                                MaterialTheme.colorScheme.primaryContainer
+                            } else {
+                                MaterialTheme.colorScheme.surface
+                            }
                         )
                     }
                     Row(
@@ -153,7 +159,7 @@ fun DiningLogsScreen(
                                 .background(MaterialTheme.colorScheme.error)
                                 .clickable {
                                     scope.launch { state.animateTo(HorizontalDragValue.Settled) }
-                                    logViewModel.deleteEntry(index)
+                                    onDeleteButtonClicked(index)
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -214,7 +220,14 @@ fun DiningEntry(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
+        Column(
+            modifier = Modifier.padding(
+                start = 12.dp,
+                end = 12.dp,
+                top = 8.dp,
+                bottom = 8.dp
+            )
+        ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
                     Row {
@@ -246,12 +259,23 @@ fun DiningEntry(
                         Icon(
                             painter = painterResource(R.drawable.person),
                             contentDescription = null,
-                            modifier = Modifier.padding(start = 8.dp, end = 2.dp)
+                            modifier = Modifier.padding(start = 4.dp, end = 1.dp)
                         )
                         Text(
                             text = log.personCount.toString(),
                             style = MaterialTheme.typography.bodyLarge
                         )
+                        if(log.favorite) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                Icons.Default.Favorite,
+                                contentDescription = "Favorite",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .padding(horizontal = 3.dp)
+                            )
+                        }
                         Spacer(modifier = Modifier.weight(1f))
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
@@ -268,21 +292,23 @@ fun DiningEntry(
                     }
                 }
             }
-            AnimatedVisibility(
-                visible = expanded,
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
-            ) {
-                Text(
-                    text = log.restaurantDescription,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(
-                        start = 4.dp,
-                        end = 16.dp,
-                        top = 4.dp,
-                        bottom = 4.dp
+            if(log.restaurantDescription.isNotBlank()) {
+                AnimatedVisibility(
+                    visible = expanded,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Text(
+                        text = log.restaurantDescription,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(
+                            start = 4.dp,
+                            end = 16.dp,
+                            top = 4.dp,
+                            bottom = 4.dp
+                        )
                     )
-                )
+                }
             }
         }
     }

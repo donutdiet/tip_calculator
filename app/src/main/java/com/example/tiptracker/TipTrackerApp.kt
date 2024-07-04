@@ -74,6 +74,7 @@ fun ContentScreen(
     editLogViewModel: EditLogViewModel,
     navController: NavHostController,
     selectedIndex: Int,
+    navigateToDiningLogsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when (selectedIndex) {
@@ -87,10 +88,12 @@ fun ContentScreen(
         1 -> AddEntryFormNavHost(
             viewModel = logViewModel,
             navController = navController,
+            navigateToDiningLogsScreen = navigateToDiningLogsScreen,
             modifier = modifier
         )
 
         2 -> ProfileScreen(
+            logViewModel = logViewModel,
             modifier = modifier.fillMaxSize()
         )
     }
@@ -165,6 +168,7 @@ fun TipTrackerApp(
             editLogViewModel = editLogViewModel,
             navController = navController,
             selectedIndex = selectedIndex,
+            navigateToDiningLogsScreen = { selectedIndex = 0 },
             modifier = Modifier.padding(innerPadding)
         )
     }
