@@ -135,13 +135,23 @@ class LogViewModel : ViewModel() {
         return totalPerPerson
     }
 
+    private fun getActualTipPercent(): Double {
+        var tipPercent = tipPercent.value.toDoubleOrNull() ?: 0.0
+        val billAmount = billAmount.value.toDoubleOrNull() ?: 0.0
+        if ((roundUpTip.value || roundUpTotal.value) && billAmount > 0) {
+            tipPercent = getCalculatedTip() / billAmount * 100
+            tipPercent = Math.round(tipPercent * 100) / 100.0
+        }
+        return tipPercent
+    }
+
     fun checkFormValidity(): Boolean {
         val billAmountDouble = billAmount.value.toDoubleOrNull() ?: 0.0
         val tipPercentDouble = tipPercent.value.toDoubleOrNull() ?: 0.0
         // Ensure party size is an integer; default to 1 if left empty
         var partySize = personCount.value.toIntOrNull()
         if (personCount.value.isEmpty()) partySize = 1
-        return billAmountDouble >= 0.0 && tipPercentDouble >= 0.0 && partySize != null
+        return billAmountDouble >= 0.0 && tipPercentDouble >= 0.0 && partySize != null && partySize >= 1
     }
 
     fun clearForm() {
@@ -162,16 +172,16 @@ class LogViewModel : ViewModel() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun logEntry() {
+    fun addLogEntry() {
         val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
         val billAmountDouble = billAmount.value.toDoubleOrNull() ?: 0.0
-        val tipPercentDouble = tipPercent.value.toDoubleOrNull() ?: 0.0
+        val tipPercentDouble = getActualTipPercent()
         val tipAmountDouble = getCalculatedTip()
         val totalAmountDouble = getCalculatedTotal()
         val totalPerPersonDouble = getCalculatedTotalPerPerson()
         val diningEntry = DiningLogData(
             billAmount = billAmountDouble,
-            tipPercent = tipPercentDouble, // Assuming tipPercent should be a Double
+            tipPercent = tipPercentDouble,
             tipAmount = tipAmountDouble,
             personCount = personCount.value.toIntOrNull() ?: 1,
             totalAmount = totalAmountDouble,
@@ -236,7 +246,6 @@ class LogViewModel : ViewModel() {
             println("Entry with ID $id not found.")
         }
     }
-
 
     fun deleteEntry(index: Int) {
         diningLogs.removeAt(index)

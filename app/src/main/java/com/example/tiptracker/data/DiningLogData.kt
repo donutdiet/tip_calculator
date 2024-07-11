@@ -39,7 +39,7 @@ object UserStats {
         private set
     var highestTipPercentLogId: UUID? = null
         private set
-    var highestPartySizeLogId: UUID? = null
+    var largestPartySizeLogId: UUID? = null
         private set
 
     fun updateUserStats(diningLogs: List<DiningLogData>) {
@@ -49,7 +49,7 @@ object UserStats {
         val avgBill = if (visits > 0) diningLogs.sumOf { it.billAmount } / visits else 0.0
         val avgTip = if (visits > 0) tips / visits else 0.0
         val avgSpend = if (visits > 0) spend / visits else 0.0
-        val avgTipPercent = if (avgSpend > 0) avgTip / avgSpend * 100 else 0.0
+        val avgTipPercent = if (visits > 0) diningLogs.sumOf { it.tipPercent } / visits else 0.0
         // cast to double to prevent integer division rounding
         val avgPartySize = if (visits > 0) diningLogs.sumOf { it.personCount } / visits.toDouble() else 0.0
 
@@ -65,13 +65,13 @@ object UserStats {
 
     fun updateLogRecords(diningLogs: List<DiningLogData>) {
         if (diningLogs.isNotEmpty()) {
-            highestSpendLogId = diningLogs.maxByOrNull { it.totalAmount }?.id
+            highestSpendLogId = diningLogs.maxByOrNull { it.totalAmountPerPerson }?.id
             highestTipPercentLogId = diningLogs.maxByOrNull { it.tipPercent }?.id
-            highestPartySizeLogId = diningLogs.maxByOrNull { it.personCount }?.id
+            largestPartySizeLogId = diningLogs.maxByOrNull { it.personCount }?.id
         } else {
             highestSpendLogId = null
             highestTipPercentLogId = null
-            highestPartySizeLogId = null
+            largestPartySizeLogId = null
         }
     }
 }

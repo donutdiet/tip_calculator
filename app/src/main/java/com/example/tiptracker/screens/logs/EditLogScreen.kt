@@ -32,7 +32,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.tiptracker.R
 import com.example.tiptracker.screens.addentry.PageHeader
-import com.example.tiptracker.ui.LogViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tiptracker.screens.addentry.MultiLineTextInputField

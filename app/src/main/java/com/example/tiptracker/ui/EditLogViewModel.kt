@@ -48,39 +48,44 @@ class EditLogViewModel : ViewModel() {
     fun getCalculatedTipPercent(): Double {
         val billAmountDouble = tempBillAmount.value.toDoubleOrNull() ?: 0.0
         val tipAmountDouble = tempTipAmount.value.toDoubleOrNull() ?: 0.0
-        return if(billAmountDouble > 0) Math.round((tipAmountDouble / billAmountDouble) * 10) / 100.0 else 0.0
-    }
-
-    fun getCalculatedTotal(): Double {
-        val billAmountDouble = tempBillAmount.value.toDoubleOrNull() ?: 0.0
-        val tipAmountDouble = tempTipAmount.value.toDoubleOrNull() ?: 0.0
-        return Math.round((billAmountDouble + tipAmountDouble) * 100) / 100.0
-    }
-
-    fun getCalculatedTotalPerPerson(): Double {
-        val total = getCalculatedTotal()
-        val partySize = tempPersonCount.value.toIntOrNull() ?: 1
-        return Math.round((total / partySize) * 100) / 100.0
-    }
-
-    fun loadCurrentLogData(diningLogs: List<DiningLogData>, index: Int) {
-        if(index != -1) {
-            tempBillAmount.value = diningLogs[index].billAmount.toString()
-            tempTipAmount.value = diningLogs[index].tipAmount.toString()
-            tempPersonCount.value = diningLogs[index].personCount.toString()
-            tempRestaurantName.value = diningLogs[index].restaurantName
-            tempRestaurantDescription.value = diningLogs[index].restaurantDescription
-            tempDate.value = diningLogs[index].date
-            id = diningLogs[index].id
+        return if (billAmountDouble > 0) {
+            val tipPercent = (tipAmountDouble / billAmountDouble) * 100
+            Math.round(tipPercent * 100) / 100.0
+        } else {
+            0.0
         }
     }
 
-    fun clearForm() {
-        tempBillAmount.value = ""
-        tempTipAmount.value = ""
-        tempPersonCount.value = ""
-        tempRestaurantName.value = ""
-        tempRestaurantDescription.value = ""
-        tempDate.value = ""
+fun getCalculatedTotal(): Double {
+    val billAmountDouble = tempBillAmount.value.toDoubleOrNull() ?: 0.0
+    val tipAmountDouble = tempTipAmount.value.toDoubleOrNull() ?: 0.0
+    return Math.round((billAmountDouble + tipAmountDouble) * 100) / 100.0
+}
+
+fun getCalculatedTotalPerPerson(): Double {
+    val total = getCalculatedTotal()
+    val partySize = tempPersonCount.value.toIntOrNull() ?: 1
+    return Math.round((total / partySize) * 100) / 100.0
+}
+
+fun loadCurrentLogData(diningLogs: List<DiningLogData>, index: Int) {
+    if (index != -1) {
+        tempBillAmount.value = diningLogs[index].billAmount.toString()
+        tempTipAmount.value = diningLogs[index].tipAmount.toString()
+        tempPersonCount.value = diningLogs[index].personCount.toString()
+        tempRestaurantName.value = diningLogs[index].restaurantName
+        tempRestaurantDescription.value = diningLogs[index].restaurantDescription
+        tempDate.value = diningLogs[index].date
+        id = diningLogs[index].id
     }
+}
+
+fun clearForm() {
+    tempBillAmount.value = ""
+    tempTipAmount.value = ""
+    tempPersonCount.value = ""
+    tempRestaurantName.value = ""
+    tempRestaurantDescription.value = ""
+    tempDate.value = ""
+}
 }

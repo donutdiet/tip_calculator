@@ -1,6 +1,7 @@
 package com.example.tiptracker.screens.logs
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +31,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -49,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -79,7 +84,7 @@ fun DiningLogsScreen(
     onEditButtonClicked: (Int) -> Unit,
     onDeleteButtonClicked: (Int) -> Unit
 ) {
-    if (logViewModel.diningLogs.size > 0) {
+    if (logViewModel.diningLogs.isNotEmpty()) {
         LazyColumn(
             contentPadding = contentPadding,
             modifier = modifier
@@ -104,7 +109,7 @@ fun DiningLogsScreen(
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 12.dp)
-                        .animateItemPlacement()
+                        .animateContentSize()
                 ) {
                     var cardHeight by remember { mutableIntStateOf(0) }
 
@@ -113,6 +118,12 @@ fun DiningLogsScreen(
                             .padding(vertical = 4.dp)
                             .height(with(LocalDensity.current) { cardHeight.toDp() } - 8.dp)
                             .fillMaxWidth(0.35f)
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = 4.dp,
+                                    bottomStart = 4.dp
+                                )
+                            )
                             .background(MaterialTheme.colorScheme.primary)
                             .align(Alignment.CenterStart)
                             .clickable {
@@ -135,7 +146,7 @@ fun DiningLogsScreen(
                         modifier = Modifier
                             .padding(vertical = 4.dp)
                             .height(with(LocalDensity.current) { cardHeight.toDp() } - 8.dp)
-                            .fillMaxWidth(0.4f)
+                            .fillMaxWidth(0.41f)
                             .align(Alignment.CenterEnd),
                     ) {
                         Box(
@@ -156,6 +167,12 @@ fun DiningLogsScreen(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxSize()
+                                .clip(
+                                    RoundedCornerShape(
+                                        topEnd = 4.dp,
+                                        bottomEnd = 4.dp
+                                    )
+                                )
                                 .background(MaterialTheme.colorScheme.error)
                                 .clickable {
                                     scope.launch { state.animateTo(HorizontalDragValue.Settled) }
@@ -215,10 +232,10 @@ fun DiningEntry(
     val currencyFormatter: NumberFormat = NumberFormat.getCurrencyInstance()
     var expanded by remember { mutableStateOf(false) }
     Card(
-        modifier = modifier
-            .clickable { expanded = !expanded },
+        modifier = modifier.clickable { expanded = !expanded },
+        shape = RoundedCornerShape(4.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Column(
             modifier = Modifier.padding(
@@ -238,6 +255,7 @@ fun DiningEntry(
                             maxLines = 1,
                             modifier = Modifier.weight(1f)
                         )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
                                 text = "Total:",
@@ -271,9 +289,7 @@ fun DiningEntry(
                                 Icons.Default.Favorite,
                                 contentDescription = "Favorite",
                                 tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier
-                                    .size(24.dp)
-                                    .padding(horizontal = 3.dp)
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                         Spacer(modifier = Modifier.weight(1f))
@@ -328,7 +344,29 @@ fun DiningEntryPreview() {
                 totalAmountPerPerson = 35.96,
                 restaurantName = "Sesame Sea Asian Bistro",
                 restaurantDescription = "Very nice food w/ good service. Some options were not halal though, so be aware. Alhamdulillah",
-                date = "June 24, 2024"
+                date = "June 24, 2024",
+                favorite = true,
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DiningEntryPreviewDarkTheme() {
+    TipTrackerTheme(darkTheme = true) {
+        DiningEntry(
+            log = DiningLogData(
+                billAmount = 100.12,
+                tipAmount = 2.01,
+                tipPercent = 20.00,
+                personCount = 2,
+                totalAmount = 100.12,
+                totalAmountPerPerson = 35.96,
+                restaurantName = "Sesame Sea Asian Bistro",
+                restaurantDescription = "Very nice food w/ good service. Some options were not halal though, so be aware. Alhamdulillah",
+                date = "June 24, 2024",
+                favorite = true,
             )
         )
     }

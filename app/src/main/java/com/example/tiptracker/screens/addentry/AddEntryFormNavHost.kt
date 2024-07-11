@@ -50,7 +50,7 @@ fun AddEntryFormNavHost(
                     )
                 },
                 onSaveButtonClicked = {
-                    viewModel.logEntry()
+                    viewModel.addLogEntry()
                     navController.popBackStack(
                         DiningInputScreens.BillInput.name,
                         inclusive = false
