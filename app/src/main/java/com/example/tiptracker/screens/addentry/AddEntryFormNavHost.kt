@@ -5,29 +5,33 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.tiptracker.ui.LogViewModel
 
 enum class DiningInputScreens {
     BillInput,
     DescriptionInput
 }
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AddEntryFormNavHost(
     viewModel: LogViewModel,
-    navController: NavHostController,
     navigateToDiningLogsScreen: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val navController = rememberNavController()
+
     NavHost(
         navController = navController,
         startDestination = DiningInputScreens.BillInput.name,
         modifier = modifier
     ) {
-        composable(route = DiningInputScreens.BillInput.name) {
+        composable(
+            route = DiningInputScreens.BillInput.name,
+        ) {
             BillInputScreen(
                 modifier = Modifier.fillMaxSize(),
                 onClearButtonClicked = { viewModel.clearForm() },

@@ -2,6 +2,7 @@ package com.example.tiptracker
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,10 +24,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,15 +34,69 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.tiptracker.data.BottomBarNavItem
+import com.example.tiptracker.data.navItemList
 import com.example.tiptracker.screens.ProfileScreen
 import com.example.tiptracker.screens.addentry.AddEntryFormNavHost
 import com.example.tiptracker.screens.logs.DiningLogsNavHost
 import com.example.tiptracker.ui.EditLogViewModel
 import com.example.tiptracker.ui.LogViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalFoundationApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun TipTrackerApp(
+    logViewModel: LogViewModel = viewModel(),
+    editLogViewModel: EditLogViewModel = viewModel(),
+) {
+    val pagerState = rememberPagerState(pageCount = { 3 }, initialPage = 1)
+    val scope = rememberCoroutineScope()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        logViewModel.initialize(context)
+    }
+
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = { AppTopBar() },
+        bottomBar = {
+            AppBottomBar(
+                pagerState = pagerState,
+                scope = scope
+            )
+        }
+    ) { innerPadding ->
+        HorizontalPager(state = pagerState) { page ->
+            when (page) {
+                0 -> DiningLogsNavHost(
+                    logViewModel = logViewModel,
+                    editLogViewModel = editLogViewModel,
+                    modifier = Modifier.padding(innerPadding)
+                )
+
+                1 -> AddEntryFormNavHost(
+                    viewModel = logViewModel,
+                    navigateToDiningLogsScreen = {
+                        scope.launch {
+                            pagerState.scrollToPage(0)
+                        }
+                    },
+                    modifier = Modifier.padding(innerPadding)
+                )
+                2 -> ProfileScreen(
+                    logViewModel = logViewModel,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                )
+            }
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,43 +122,11 @@ fun AppTopBar(
     )
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun ContentScreen(
-    logViewModel: LogViewModel,
-    editLogViewModel: EditLogViewModel,
-    navController: NavHostController,
-    selectedIndex: Int,
-    navigateToDiningLogsScreen: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    when (selectedIndex) {
-        0 -> DiningLogsNavHost(
-            logViewModel = logViewModel,
-            editLogViewModel = editLogViewModel,
-            navController = navController,
-            modifier = modifier
-        )
-
-        1 -> AddEntryFormNavHost(
-            viewModel = logViewModel,
-            navController = navController,
-            navigateToDiningLogsScreen = navigateToDiningLogsScreen,
-            modifier = modifier
-        )
-
-        2 -> ProfileScreen(
-            logViewModel = logViewModel,
-            modifier = modifier.fillMaxSize()
-        )
-    }
-}
-
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppBottomBar(
-    navItemList: List<BottomBarNavItem>,
-    selectedIndex: Int,
-    onItemSelected: (Int) -> Unit
+    pagerState: PagerState,
+    scope: CoroutineScope
 ) {
     NavigationBar(
         containerColor = Color.Transparent,
@@ -112,8 +135,12 @@ fun AppBottomBar(
     ) {
         navItemList.forEachIndexed { index, navItem ->
             NavigationBarItem(
-                selected = selectedIndex == index,
-                onClick = { onItemSelected(index) },
+                selected = pagerState.currentPage == index,
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
                 icon = {
                     Icon(
                         painter = painterResource(navItem.iconRes),
@@ -128,49 +155,6 @@ fun AppBottomBar(
                 }
             )
         }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun TipTrackerApp(
-    logViewModel: LogViewModel = viewModel(),
-    editLogViewModel: EditLogViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
-) {
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        logViewModel.initialize(context)
-    }
-
-    var selectedIndex by remember { mutableIntStateOf(1) }
-
-    val navItemList = listOf(
-        BottomBarNavItem("Logs", R.drawable.list),
-        BottomBarNavItem("New", R.drawable.add),
-        BottomBarNavItem("Profile", R.drawable.person)
-    )
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = { AppTopBar() },
-        bottomBar = {
-            AppBottomBar(
-                navItemList = navItemList,
-                selectedIndex = selectedIndex,
-                onItemSelected = { index -> selectedIndex = index }
-            )
-        }
-    ) { innerPadding ->
-        ContentScreen(
-            logViewModel = logViewModel,
-            editLogViewModel = editLogViewModel,
-            navController = navController,
-            selectedIndex = selectedIndex,
-            navigateToDiningLogsScreen = { selectedIndex = 0 },
-            modifier = Modifier.padding(innerPadding)
-        )
     }
 }
 

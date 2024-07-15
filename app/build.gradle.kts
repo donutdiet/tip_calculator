@@ -11,8 +11,8 @@ android {
         applicationId = "com.jerrywang.tiptracker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 7
-        versionName = "1.1.2"
+        versionCode = 8
+        versionName = "1.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.gson)
+    implementation(libs.androidx.animation)
+    implementation(libs.androidx.foundation)
 
     implementation(libs.core)
     implementation(libs.calendar)

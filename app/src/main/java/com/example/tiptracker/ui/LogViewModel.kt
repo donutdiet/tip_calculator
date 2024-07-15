@@ -21,7 +21,6 @@ class LogViewModel : ViewModel() {
 
     fun initialize(context: Context) {
         sharedPreferences = context.getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
-        // will sometimes cause the app to break i will figure out why when i learn more abt databases
         loadLogs()
         UserStats.updateUserStats(diningLogs)
         UserStats.updateLogRecords(diningLogs)

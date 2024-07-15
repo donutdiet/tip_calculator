@@ -6,8 +6,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.tiptracker.ui.EditLogViewModel
 import com.example.tiptracker.ui.LogViewModel
 
@@ -21,9 +21,10 @@ enum class DiningLogsScreens {
 fun DiningLogsNavHost(
     logViewModel: LogViewModel,
     editLogViewModel: EditLogViewModel,
-    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val navController = rememberNavController()
+
     NavHost(
         navController = navController,
         startDestination = DiningLogsScreens.DiningLogs.name,
