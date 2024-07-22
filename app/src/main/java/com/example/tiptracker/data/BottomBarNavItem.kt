@@ -1,12 +1,16 @@
 package com.example.tiptracker.data
 
 import androidx.annotation.DrawableRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import com.example.tiptracker.R
 
 enum class AppScreens {
+    RankingsScreen,
     LogsScreen,
     HomeScreen,
     ProfileScreen,
+    SettingsScreen,
 }
 
 data class BottomBarNavItem(
@@ -16,6 +20,11 @@ data class BottomBarNavItem(
 )
 
 val navItemList = listOf(
+    BottomBarNavItem(
+        label = "Rankings",
+        iconRes = R.drawable.leaderboard,
+        route = AppScreens.RankingsScreen.name
+    ),
     BottomBarNavItem(
         label = "Logs",
         iconRes = R.drawable.list,
@@ -30,5 +39,10 @@ val navItemList = listOf(
         label = "Profile",
         iconRes = R.drawable.person,
         route = AppScreens.ProfileScreen.name
-    )
+    ),
+    BottomBarNavItem(
+        label = "Settings",
+        iconRes = R.drawable.settings,
+        route = AppScreens.SettingsScreen.name
+    ),
 )

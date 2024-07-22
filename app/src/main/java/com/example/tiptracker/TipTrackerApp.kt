@@ -1,6 +1,7 @@
 package com.example.tiptracker
 
 import android.os.Build
+import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -14,9 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -36,11 +40,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tiptracker.data.navItemList
 import com.example.tiptracker.screens.ProfileScreen
+import com.example.tiptracker.screens.RankingsScreen
+import com.example.tiptracker.screens.SettingsScreen
 import com.example.tiptracker.screens.addentry.AddEntryFormNavHost
 import com.example.tiptracker.screens.logs.DiningLogsNavHost
 import com.example.tiptracker.ui.EditLogViewModel
 import com.example.tiptracker.ui.LogViewModel
+import com.example.tiptracker.ui.SettingsViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -50,8 +58,10 @@ import kotlinx.coroutines.launch
 fun TipTrackerApp(
     logViewModel: LogViewModel = viewModel(),
     editLogViewModel: EditLogViewModel = viewModel(),
+    settingsViewModel: SettingsViewModel,
+    isDarkModeActive: Boolean
 ) {
-    val pagerState = rememberPagerState(pageCount = { 3 }, initialPage = 1)
+    val pagerState = rememberPagerState(pageCount = { 5 }, initialPage = 2)
     val scope = rememberCoroutineScope()
 
     val context = LocalContext.current
@@ -72,13 +82,14 @@ fun TipTrackerApp(
     ) { innerPadding ->
         HorizontalPager(state = pagerState) { page ->
             when (page) {
-                0 -> DiningLogsNavHost(
+                0 -> RankingsScreen()
+                1 -> DiningLogsNavHost(
                     logViewModel = logViewModel,
                     editLogViewModel = editLogViewModel,
                     modifier = Modifier.padding(innerPadding)
                 )
 
-                1 -> AddEntryFormNavHost(
+                2 -> AddEntryFormNavHost(
                     viewModel = logViewModel,
                     navigateToDiningLogsScreen = {
                         scope.launch {
@@ -87,8 +98,15 @@ fun TipTrackerApp(
                     },
                     modifier = Modifier.padding(innerPadding)
                 )
-                2 -> ProfileScreen(
+                3 -> ProfileScreen(
                     logViewModel = logViewModel,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                )
+                4 -> SettingsScreen(
+                    settingsViewModel = settingsViewModel,
+                    isDarkModeActive = isDarkModeActive,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
@@ -105,7 +123,9 @@ fun AppTopBar(
 ) {
     CenterAlignedTopAppBar(
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Image(
                     painter = painterResource(R.drawable.tip_tracker_app_logo),
                     contentDescription = null,
@@ -163,6 +183,9 @@ fun AppBottomBar(
 @Composable
 fun TipTrackerAppScaffoldPreview() {
     TipTrackerTheme {
-        TipTrackerApp()
+        TipTrackerApp(
+            settingsViewModel = viewModel(),
+            isDarkModeActive = false
+        )
     }
 }
