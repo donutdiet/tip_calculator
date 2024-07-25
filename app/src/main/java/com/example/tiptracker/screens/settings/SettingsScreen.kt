@@ -32,7 +32,7 @@ fun SettingsScreen(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(vertical = 12.dp, horizontal = 40.dp)
+                .padding(vertical = 4.dp, horizontal = 40.dp)
         ) {
             Text(
                 text = "Settings",

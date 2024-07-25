@@ -127,7 +127,7 @@ fun AppTopBar(
                 Image(
                     painter = painterResource(R.drawable.tip_tracker_app_logo),
                     contentDescription = null,
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.size(40.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(

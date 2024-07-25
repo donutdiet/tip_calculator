@@ -22,7 +22,7 @@ val Typography = Typography(
     displayLarge = TextStyle(
         fontFamily = Domine,
         fontWeight = FontWeight.Normal,
-        fontSize = 28.sp
+        fontSize = 24.sp
     ),
     displayMedium = TextStyle(
         fontFamily = Roboto,

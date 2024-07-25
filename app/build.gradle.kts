@@ -14,8 +14,8 @@ android {
         applicationId = "com.jerrywang.tiptracker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 9
-        versionName = "1.1.4"
+        versionCode = 11
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
