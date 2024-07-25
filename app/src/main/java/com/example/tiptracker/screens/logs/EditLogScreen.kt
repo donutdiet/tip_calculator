@@ -37,7 +37,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tiptracker.screens.addentry.MultiLineTextInputField
 import com.example.tiptracker.screens.addentry.TextInputField
 import com.example.tiptracker.screens.addentry.TwoButtonRow
-import com.example.tiptracker.ui.EditLogViewModel
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig

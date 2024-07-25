@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.dp
 import com.example.tiptracker.R
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tiptracker.ui.LogViewModel
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
 import com.maxkeppeler.sheets.calendar.models.CalendarConfig

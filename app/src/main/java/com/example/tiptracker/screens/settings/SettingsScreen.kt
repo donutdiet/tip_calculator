@@ -1,5 +1,7 @@
-package com.example.tiptracker.screens
+package com.example.tiptracker.screens.settings
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,13 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tiptracker.ui.SettingsViewModel
+import com.example.tiptracker.data.ISettingsViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 
 @Composable
 fun SettingsScreen(
-    settingsViewModel: SettingsViewModel,
+    settingsViewModel: ISettingsViewModel,
     isDarkModeActive: Boolean,
     modifier: Modifier = Modifier
 ) {
@@ -43,23 +44,34 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Dark Mode")
+                Text(
+                    text = "Dark Mode",
+                    style = MaterialTheme.typography.labelMedium
+                )
                 Switch(
                     checked = isDarkModeActive,
-                    onCheckedChange = {settingsViewModel.updateIsDarkModeActive(it)}
+                    onCheckedChange = {settingsViewModel.toggleDarkMode(it)}
                 )
             }
         }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun SettingsScreenContentPreview() {
+    val mockViewModel = PreviewSettingsViewModel()
+    SettingsScreen(
+        settingsViewModel = mockViewModel,
+        isDarkModeActive = false
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun SettingsScreenPreview() {
     TipTrackerTheme {
-        SettingsScreen(
-            settingsViewModel = viewModel(),
-            isDarkModeActive = false
-        )
+        SettingsScreenContentPreview()
     }
 }

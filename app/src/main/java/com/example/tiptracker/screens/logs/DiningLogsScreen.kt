@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.tiptracker.R
 import com.example.tiptracker.data.DiningLogData
-import com.example.tiptracker.ui.LogViewModel
+import com.example.tiptracker.screens.addentry.LogViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import kotlinx.coroutines.launch
 import java.text.NumberFormat

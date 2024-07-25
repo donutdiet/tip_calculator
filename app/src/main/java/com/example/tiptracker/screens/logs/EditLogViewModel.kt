@@ -1,4 +1,4 @@
-package com.example.tiptracker.ui
+package com.example.tiptracker.screens.logs
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

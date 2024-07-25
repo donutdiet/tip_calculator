@@ -8,6 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.tiptracker.ui.theme.TipTrackerTheme
 
 @Composable
 fun RankingsScreen(
@@ -20,5 +22,13 @@ fun RankingsScreen(
         ) {
             Text(text = "Coming soon... ")
         }
+    }
+}
+
+@Preview
+@Composable
+fun RankingsScreenPreview() {
+    TipTrackerTheme {
+        RankingsScreen()
     }
 }

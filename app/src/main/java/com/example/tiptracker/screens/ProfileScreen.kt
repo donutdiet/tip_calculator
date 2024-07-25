@@ -44,7 +44,7 @@ import com.example.tiptracker.data.UserStats
 import com.example.tiptracker.data.UserStats.largestPartySizeLogId
 import com.example.tiptracker.data.UserStats.highestSpendLogId
 import com.example.tiptracker.data.UserStats.highestTipPercentLogId
-import com.example.tiptracker.ui.LogViewModel
+import com.example.tiptracker.screens.addentry.LogViewModel
 import java.text.NumberFormat
 import java.util.Locale
 

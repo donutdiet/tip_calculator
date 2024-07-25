@@ -14,8 +14,8 @@ android {
         applicationId = "com.jerrywang.tiptracker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 8
-        versionName = "1.1.3"
+        versionCode = 9
+        versionName = "1.1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -82,7 +82,6 @@ dependencies {
 
     // Preferences DataStore
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.datastore.core)
 
     // Hilt
     implementation(libs.hilt.android)

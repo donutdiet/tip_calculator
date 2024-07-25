@@ -1,4 +1,4 @@
-package com.example.tiptracker.ui
+package com.example.tiptracker.screens.addentry
 
 import android.content.Context
 import android.content.SharedPreferences

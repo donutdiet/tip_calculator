@@ -46,7 +46,6 @@ import com.example.tiptracker.ui.theme.TipTrackerTheme
 import java.text.NumberFormat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tiptracker.R
-import com.example.tiptracker.ui.LogViewModel
 
 @Composable
 fun BillInputScreen(
@@ -314,7 +313,7 @@ fun TextInputField(
         value = value,
         label = {
             Text(
-                stringResource(label),
+                text = stringResource(label),
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

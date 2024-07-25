@@ -1,7 +1,6 @@
 package com.example.tiptracker
 
 import android.os.Build
-import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -15,12 +14,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -35,20 +31,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tiptracker.data.navItemList
 import com.example.tiptracker.screens.ProfileScreen
 import com.example.tiptracker.screens.RankingsScreen
-import com.example.tiptracker.screens.SettingsScreen
+import com.example.tiptracker.screens.settings.SettingsScreen
 import com.example.tiptracker.screens.addentry.AddEntryFormNavHost
 import com.example.tiptracker.screens.logs.DiningLogsNavHost
-import com.example.tiptracker.ui.EditLogViewModel
-import com.example.tiptracker.ui.LogViewModel
-import com.example.tiptracker.ui.SettingsViewModel
+import com.example.tiptracker.screens.logs.EditLogViewModel
+import com.example.tiptracker.data.ISettingsViewModel
+import com.example.tiptracker.screens.addentry.LogViewModel
+import com.example.tiptracker.screens.settings.PreviewSettingsViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
-import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -58,7 +56,7 @@ import kotlinx.coroutines.launch
 fun TipTrackerApp(
     logViewModel: LogViewModel = viewModel(),
     editLogViewModel: EditLogViewModel = viewModel(),
-    settingsViewModel: SettingsViewModel,
+    settingsViewModel: ISettingsViewModel,
     isDarkModeActive: Boolean
 ) {
     val pagerState = rememberPagerState(pageCount = { 5 }, initialPage = 2)
@@ -93,7 +91,7 @@ fun TipTrackerApp(
                     viewModel = logViewModel,
                     navigateToDiningLogsScreen = {
                         scope.launch {
-                            pagerState.scrollToPage(0)
+                            pagerState.scrollToPage(1)
                         }
                     },
                     modifier = Modifier.padding(innerPadding)
@@ -170,7 +168,10 @@ fun AppBottomBar(
                 label = {
                     Text(
                         text = navItem.label,
-                        style = MaterialTheme.typography.labelSmall
+                        style = MaterialTheme.typography.labelSmall,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Visible
                     )
                 }
             )
@@ -179,13 +180,20 @@ fun AppBottomBar(
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun TipTrackerAppContentPreview() {
+    val mockViewModel = PreviewSettingsViewModel()
+    TipTrackerApp(
+        settingsViewModel = mockViewModel,
+        isDarkModeActive = false
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun TipTrackerAppScaffoldPreview() {
     TipTrackerTheme {
-        TipTrackerApp(
-            settingsViewModel = viewModel(),
-            isDarkModeActive = false
-        )
+        TipTrackerAppContentPreview()
     }
 }

@@ -7,13 +7,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.tiptracker.ui.SettingsViewModel
+import com.example.tiptracker.screens.settings.SettingsViewModel
 import com.example.tiptracker.ui.theme.TipTrackerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -37,29 +33,5 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun TipTrackerAppPreview() {
-    TipTrackerTheme {
-        TipTrackerApp(
-            settingsViewModel = viewModel(),
-            isDarkModeActive = false
-        )
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
-@Composable
-fun TipTrackerAppPreviewDarkTheme() {
-    TipTrackerTheme(darkTheme = true) {
-        TipTrackerApp(
-            settingsViewModel = viewModel(),
-            isDarkModeActive = false
-        )
     }
 }
