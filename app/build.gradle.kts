@@ -14,7 +14,7 @@ android {
         applicationId = "com.jerrywang.tiptracker"
         minSdk = 24
         targetSdk = 34
-        versionCode = 11
+        versionCode = 12
         versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -43,6 +43,10 @@ android {
                 // Includes a local, custom Proguard rules file
                 "proguard-rules.pro"
             )
+
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
         }
     }
     compileOptions {

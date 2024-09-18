@@ -233,7 +233,10 @@ fun DiningLogRecord(
             ) {
                 Text(
                     text = recordLabel,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = log.date,
@@ -255,7 +258,10 @@ fun DiningLogRecord(
             ) {
                 Text(
                     text = recordLabel,
-                    style = MaterialTheme.typography.labelSmall
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
                 )
                 Text(
                     text = "No data available",
